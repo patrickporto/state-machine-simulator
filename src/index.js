@@ -1,15 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Grommet } from "grommet";
+import { I18nextProvider } from "react-i18next";
 import theme from "./theme";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import i18n from "./i18n";
 
 ReactDOM.render(
     <React.StrictMode>
-        <Grommet theme={theme} full>
-            <App />
-        </Grommet>
+        <I18nextProvider i18n={i18n}>
+            <Grommet theme={theme} full>
+                <App />
+            </Grommet>
+        </I18nextProvider>
     </React.StrictMode>,
     document.getElementById("root")
 );
