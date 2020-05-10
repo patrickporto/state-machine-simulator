@@ -1,6 +1,6 @@
-# Github Pages React
+# State Machine Simulator
 
-Start your next react project in seconds.
+Finite state machines simulator for the modern web.
 
 ## Getting Start
 
