@@ -155,6 +155,13 @@ const CytoscapeRenderer = () => {
             klay: { spacing: 200 },
         });
 
+        const node = cy.current.$(`#${currentState}`);
+        node.addClass("highlighted");
+        const edges = node.outgoers("edge");
+        for (const edge of edges) {
+            edge.addClass("highlighted");
+        }
+
         layout.run();
     }, []);
 
