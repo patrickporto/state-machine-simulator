@@ -9,40 +9,12 @@ cytoscape.use(klay);
 const Canvas = styled.div`
     width: 100%;
     height: 100%;
-    background-color: #543d96;
-    background-image: linear-gradient(#5f479f 2px, transparent 2px),
-        linear-gradient(90deg, #5f479f 2px, transparent 2px),
-        linear-gradient(#674ea7 1px, transparent 1px),
-        linear-gradient(90deg, #674ea7 1px, transparent 1px);
-    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 `;
 
 const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
     const renderer = useRef();
-    const cy = useRef();
-
-    const handleChangeState = useCallback(
-        (evt) => {
-            const edge = cy.current.$(`#${evt.target.id()}`);
-            if (currentState !== edge.source().id()) {
-                return;
-            }
-            const node = edge.target();
-            onTransact(node.id());
-            cy.current.elements().removeClass("highlighted");
-            node.addClass("highlighted");
-            const edges = node.outgoers("edge");
-            for (const edge of edges) {
-                edge.addClass("highlighted");
-            }
-        },
-        [currentState, onTransact]
-    );
-
-    useEffect(() => {
-        cy.current = cytoscape({
-            container: renderer.current,
+    const cy = useRef(
+        cytoscape({
             style: [
                 // the stylesheet for the graph
                 {
@@ -92,7 +64,23 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
                     },
                 },
             ],
-        });
+        })
+    );
+
+    const handleChangeState = useCallback(
+        (evt) => {
+            const edge = cy.current.$(`#${evt.target.id()}`);
+            if (currentState !== edge.source().id()) {
+                return;
+            }
+            const node = edge.target();
+            onTransact(node.id());
+        },
+        [currentState, onTransact]
+    );
+
+    useEffect(() => {
+        cy.current.mount(renderer.current);
         cy.current.add([
             {
                 group: "nodes",
@@ -166,6 +154,14 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
     }, []);
 
     useEffect(() => {
+        const node = cy.current.$(`#${currentState}`);
+        cy.current.elements().removeClass("highlighted");
+        node.addClass("highlighted");
+        const edges = node.outgoers("edge");
+        for (const edge of edges) {
+            edge.addClass("highlighted");
+        }
+
         cy.current.on("tap", "edge", handleChangeState);
         return () => {
             cy.current.removeListener("tap", handleChangeState);
