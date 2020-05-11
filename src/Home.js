@@ -1,10 +1,10 @@
 import React from "react";
-import Visualizer from "./Visualizer";
+import Renderer from "./CytoscapeRenderer";
 
 const Home = () => {
     return (
         <React.Fragment>
-            <Visualizer />
+            <Renderer />
         </React.Fragment>
     );
 };
