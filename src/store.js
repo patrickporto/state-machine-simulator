@@ -1,12 +1,17 @@
-import { createStore, applyMiddleware } from "redux";
+import { createStore, applyMiddleware, combineReducers } from "redux";
 import createSagaMiddleware from "redux-saga";
-import reducer from "./reducers";
+import { composeWithDevTools } from "redux-devtools-extension";
 import saga from "./sagas";
+import { stateMachineReducer } from "./ducks";
 
-// create the saga middleware
+const rootReducer = combineReducers({ stateMachine: stateMachineReducer });
+
 const sagaMiddleware = createSagaMiddleware();
 
-const store = createStore(reducer, applyMiddleware(sagaMiddleware));
+const store = createStore(
+    rootReducer,
+    composeWithDevTools(applyMiddleware(sagaMiddleware))
+);
 
 sagaMiddleware.run(saga);
 

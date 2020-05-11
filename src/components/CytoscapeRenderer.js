@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
+import PropTypes from "prop-types";
 import styled from "styled-components";
 import cytoscape from "cytoscape";
 import klay from "cytoscape-klay";
@@ -17,10 +18,9 @@ const Canvas = styled.div`
     background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
 `;
 
-const CytoscapeRenderer = () => {
+const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
     const renderer = useRef();
     const cy = useRef();
-    const [currentState, setCurrentState] = useState("idle");
 
     const handleChangeState = useCallback(
         (evt) => {
@@ -29,7 +29,7 @@ const CytoscapeRenderer = () => {
                 return;
             }
             const node = edge.target();
-            setCurrentState(node.id());
+            onTransact(node.id());
             cy.current.elements().removeClass("highlighted");
             node.addClass("highlighted");
             const edges = node.outgoers("edge");
@@ -37,7 +37,7 @@ const CytoscapeRenderer = () => {
                 edge.addClass("highlighted");
             }
         },
-        [currentState]
+        [currentState, onTransact]
     );
 
     useEffect(() => {
@@ -173,6 +173,12 @@ const CytoscapeRenderer = () => {
     }, [currentState]);
 
     return <Canvas ref={renderer}></Canvas>;
+};
+
+CytoscapeRenderer.propTypes = {
+    currentState: PropTypes.string.isRequired,
+    initialState: PropTypes.string.isRequired,
+    onTransact: PropTypes.func.isRequired,
 };
 
 export default CytoscapeRenderer;
