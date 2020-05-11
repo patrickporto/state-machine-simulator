@@ -1,5 +1,5 @@
 import React from "react";
-import Renderer from "./CytoscapeRenderer";
+import { CytoscapeRenderer as Renderer } from "../components";
 
 const Home = () => {
     return (

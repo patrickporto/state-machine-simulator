@@ -5,7 +5,7 @@ import { Grommet } from "grommet";
 import { I18nextProvider } from "react-i18next";
 import store from "./store";
 import theme from "./theme";
-import App from "./App";
+import { App } from "./views";
 import * as serviceWorker from "./serviceWorker";
 import i18n from "./i18n";
 
