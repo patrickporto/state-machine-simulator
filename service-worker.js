@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/state-machine-simulator/precache-manifest.3898d8e2d8ce5b6c9b7a9220a4492ea8.js"
+  "/state-machine-simulator/precache-manifest.94f87a586b548d5e02be33f4e6c9f502.js"
 );
 
 self.addEventListener('message', (event) => {
