@@ -3,8 +3,10 @@ import PropTypes from "prop-types";
 import styled from "styled-components";
 import cytoscape from "cytoscape";
 import klay from "cytoscape-klay";
+import edgehandles from "cytoscape-edgehandles";
 
 cytoscape.use(klay);
+cytoscape.use(edgehandles);
 
 const Canvas = styled.div`
     width: 100%;
@@ -16,7 +18,6 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
     const cy = useRef(
         cytoscape({
             style: [
-                // the stylesheet for the graph
                 {
                     selector: "node",
                     style: {
@@ -39,11 +40,13 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
                         "text-background-shape": "round-rectangle",
                         "text-background-opacity": 1,
                         "text-background-padding": 8,
+                        "curve-style": "unbundled-bezier",
                     },
                 },
                 {
                     selector: ".highlighted",
                     style: {
+                        "background-color": "#61bffc",
                         "line-color": "#ffffff",
                         "target-arrow-color": "#ffffff",
                         "transition-property":
@@ -63,6 +66,27 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
                         "text-background-color": "#61bffc",
                     },
                 },
+                {
+                    selector: ".eh-handle",
+                    style: {
+                        "background-color": "#7A57FF",
+                        label: "",
+                        width: 12,
+                        height: 12,
+                        shape: "ellipse",
+                        "overlay-opacity": 0,
+                        "border-width": 12, // makes the handle easier to hit
+                        "border-opacity": 0,
+                    },
+                },
+                {
+                    selector: ".eh-source",
+                    style: {
+                        "border-color": "#7A57FF",
+                        "border-opacity": 1,
+                        "border-width": 2,
+                    },
+                },
             ],
         })
     );
@@ -78,6 +102,16 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
         },
         [currentState, onTransact]
     );
+
+    const updateHighlights = useCallback(() => {
+        const node = cy.current.$(`#${currentState}`);
+        cy.current.elements().removeClass("highlighted");
+        node.addClass("highlighted");
+        const edges = node.outgoers("edge");
+        for (const edge of edges) {
+            edge.addClass("highlighted");
+        }
+    }, [currentState]);
 
     useEffect(() => {
         cy.current.mount(renderer.current);
@@ -151,20 +185,29 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
         }
 
         layout.run();
+
+        cy.current.edgehandles({
+            preview: true,
+            snap: true,
+            snapToGridOnRelease: false,
+            edgeParams(sourceNode, targetNode, i) {
+                return {
+                    data: {
+                        label: "My action",
+                    },
+                };
+            },
+        });
     }, []);
 
     useEffect(() => {
-        const node = cy.current.$(`#${currentState}`);
-        cy.current.elements().removeClass("highlighted");
-        node.addClass("highlighted");
-        const edges = node.outgoers("edge");
-        for (const edge of edges) {
-            edge.addClass("highlighted");
-        }
+        updateHighlights();
 
         cy.current.on("tap", "edge", handleChangeState);
+        cy.current.on("ehcomplete", updateHighlights);
         return () => {
             cy.current.removeListener("tap", handleChangeState);
+            cy.current.removeListener("ehcomplete", updateHighlights);
         };
     }, [currentState]);
 
