@@ -8,6 +8,7 @@
         "@testing-library/jest-dom": "^4.2.4",
         "@testing-library/react": "^9.5.0",
         "@testing-library/user-event": "^7.2.1",
+        "change-case": "^4.1.1",
         "cytoscape": "^3.14.2",
         "cytoscape-edgehandles": "^3.6.0",
         "cytoscape-klay": "^3.1.3",

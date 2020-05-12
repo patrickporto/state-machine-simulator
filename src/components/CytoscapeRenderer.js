@@ -4,6 +4,7 @@ import styled from "styled-components";
 import cytoscape from "cytoscape";
 import klay from "cytoscape-klay";
 import edgehandles from "cytoscape-edgehandles";
+import { camelCase } from "change-case";
 
 cytoscape.use(klay);
 cytoscape.use(edgehandles);
@@ -193,10 +194,23 @@ const CytoscapeRenderer = ({ initialState, currentState, onTransact }) => {
             edgeParams(sourceNode, targetNode, i) {
                 return {
                     data: {
-                        label: "My action",
+                        label: camelCase(
+                            `${sourceNode.id()} To ${targetNode.id()}`
+                        ),
                     },
                 };
             },
+        });
+
+        cy.current.on("taphold", function (event) {
+            const nodes = cy.current.$("node");
+            cy.current.add([
+                {
+                    group: "nodes",
+                    data: { id: `state${nodes.size()}` },
+                    position: event.position,
+                },
+            ]);
         });
     }, []);
 
